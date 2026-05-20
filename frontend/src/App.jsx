@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './Components/Navbar';
 import Auth from './Components/Auth';
+
+
 import './App.css';
 
 // ========================
@@ -109,6 +111,8 @@ export default function App() {
           
           {/* Products - SEPARATE PAGE */}
           <Route path="/products" element={<Products />} />
+          <Route path="/login" element={<Auth />} />
+          <Route path="/register" element={<Auth />} />
         </Routes>
       </main>
     </BrowserRouter>

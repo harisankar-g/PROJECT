@@ -2,12 +2,15 @@
 
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const connectDB = require('./Config/db');
 const productRoutes = require('./Routes/productRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+
 connectDB();
 
 app.use(express.json()); 
+app.use(cors());
 
 // Routes
 app.use('/api/users', require('./Routes/userRoutes'));

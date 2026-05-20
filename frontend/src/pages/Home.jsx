@@ -1,5 +1,7 @@
 import React from 'react';
-
+import Contact from './ContactUs';
+import About from './AboutUs';
+import Services from './Services';
 const Home = () => {
   return (
     <section className="page-content">

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser } = require('../Controllers/authController');
+// Change 'authController' to 'AuthControllers' to match your file name
+const { registerUser, loginUser } = require('../Controllers/AuthController');
 
 // POST /api/auth/register
 router.post('/register', registerUser);

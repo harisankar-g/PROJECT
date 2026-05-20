@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../api/axios'; // Import from api folder
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './Auth.css';
 
@@ -26,19 +26,22 @@ const Auth = () => {
         setRegisterData({ ...registerData, [e.target.name]: e.target.value });
     };
 
-    // --- LOGIN SUBMIT ---
+    // --- LOGIN SUBMIT (UPDATED) ---
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
         try {
-            const response = await api.post('/api/auth/login', loginData); // Changed axios to api
+            const response = await axios.post('http://localhost:3000/api/auth/login', loginData);
             
             if (response.data.token) {
+                // Save token and user to localStorage
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
                 
                 alert("Login Successful!");
+                
+                // Redirect to home
                 window.location.href = '/home';
             } else {
                 setError("Login failed");
@@ -60,7 +63,7 @@ const Auth = () => {
             return;
         }
         try {
-            const response = await api.post('/api/auth/register', registerData); // Changed axios to api
+            const response = await axios.post('http://localhost:3000/api/auth/register', registerData);
             alert("Registration Successful! Please Login.");
             setIsLogin(true);
         } catch (err) {
