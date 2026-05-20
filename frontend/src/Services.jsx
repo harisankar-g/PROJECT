@@ -6,8 +6,8 @@ const Services = () => {
       <h2>Our Services</h2>
       <div className="services-list">
         <div className="service-card">
-          <h3>Phone Repair</h3>
-          <p>Screen replacement & battery change.</p>
+          <h3>Sports Equipment Repair</h3>
+          <p>warrenty products repair or replace a new.</p>
           <button>Book Now</button>
         </div>
         <div className="service-card">
