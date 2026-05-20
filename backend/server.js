@@ -14,6 +14,7 @@ app.use('/api/users', require('./Routes/userRoutes'));
 app.use('/api/products', require('./Routes/productRoutes'));
 app.use('/api/payments', require('./Routes/paymentRoutes'));
 app.use('/api/cart',require('./Routes/cartRoutes'));
+app.use('/api/auth', require('./Routes/authRoutes'));
 
 const PORT = 3000;
 app.listen(PORT, () => {
