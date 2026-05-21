@@ -12,15 +12,15 @@ body {
 }
 
 /* ========================
-   Navbar Styles
+   Navbar Styles (UPDATED)
    ======================== */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background: #000000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  background: #ffffff; /* White background */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Softer shadow */
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -48,7 +48,7 @@ body {
 .logo-text {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #ffffff;
+  color: #000000; /* Black text */
 }
 
 .nav-links {
@@ -58,7 +58,7 @@ body {
 
 .nav-links a {
   text-decoration: none;
-  color: #dee5e6;
+  color: #000000; /* Black text */
   font-size: 1rem;
   font-weight: 500;
   padding: 8px 15px;
@@ -82,6 +82,9 @@ body {
    ======================== */
 main {
   min-height: 100vh;
+}
+main {
+  min-height: calc(100vh - 140px);
 }
 
 /* ========================
@@ -139,7 +142,7 @@ main {
 .section {
   padding: 80px 30px;
   min-height: 100vh;
-  background: #f9f9f9;
+  background: #d7d7d7;
 }
 
 .section h2 {

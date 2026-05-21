@@ -1,5 +1,5 @@
 import React from 'react';
-
+import './Products.css';
 const Services = () => {
   return (
     <section className="page-content">
@@ -11,8 +11,8 @@ const Services = () => {
           <button>Book Now</button>
         </div>
         <div className="service-card">
-          <h3>Laptop Repair</h3>
-          <p>Software & hardware solutions.</p>
+          <h3>Sports Equipment Repair</h3>
+          <p>warrenty products repair</p>
           <button>Book Now</button>
         </div>
       </div>

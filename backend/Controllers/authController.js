@@ -1,7 +1,11 @@
+const express = require('express');
+const mongoose = require('mongoose');
 const userModel = require('../Models/usermodels'); // Your User Model
+const cors = require('cors'); 
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // Run: npm install jsonwebtoken
+const jwt = require('jsonwebtoken');// Run: npm install jsonwebtoken
 const saltRounds = 10;
+
 
 // --- Register User ---
 const registerUser = async (req, res) => {

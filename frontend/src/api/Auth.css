@@ -21,7 +21,7 @@ body {
 /* Left Side - Image */
 .auth-image-section {
     width: 50%;
-    background-image: url('/frontend/public/img/Cr7Sportslogo.jpeg');
+   background-image: url('/img/Cr7Sportslogo.jpeg');
     background-size: cover;
     background-position: center;
     position: relative;
