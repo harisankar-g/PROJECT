@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const productSchema = new mongoose.Schema({
     // ADD THIS FIELD:
     product_id: { 
@@ -12,6 +13,8 @@ const productSchema = new mongoose.Schema({
     product_quantity: { type: Number, required: true },
     product_size: { type: String, required: true },
     product_color: { type: String, required: true },
+    // URL or path to product image (e.g. https://... or /uploads/....)
+    product_image: { type: String },
     product_warranty: { type: String, required: true}
 }, { timestamps: true });
 

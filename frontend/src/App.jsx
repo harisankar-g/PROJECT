@@ -9,10 +9,12 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Admincrud from './pages/Admincrud';
 
 // CSS Files
 import './App.css';
 import './api/Auth.css'; // <--- ADD THIS LINE
+
 
 export default function App() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
           <Route path="/contact" element={<Home />} />
           
           <Route path="/products" element={<Products />} />
+         <Route path="/admin" element={<Admincrud />} />
+
           
           {/* Separate Login & Register Routes */}
           <Route path="/login" element={<Login />} />
