@@ -1,18 +1,19 @@
 # TODO
 
-- [x] Update plan drafted and approved.
-- [x] Modify `frontend/src/pages/Products.jsx`:
-  - [x] Import `./Products.css`.
-
-  - [x] Add search bar UI.
-- [x] Add filtering logic for products by size/color/quantity/warranty.
-
-  - [x] Keep existing console logs and toast error handling.
-- [ ] Modify `frontend/src/Components/Navbar.jsx` and `frontend/src/ App.css` (or create Navbar CSS) to add a centered search input.
-- [x] Ensure search filters update results live as user types.
-
-- [ ] Run frontend build/lint (optional) and verify page styling.
+## Products search fix
+- [x] Update `frontend/src/pages/Products.jsx` filtering logic to include `product_name`, `product_brand`, `product_price`, `product_size` (and also `product_color`, `product_quantity`, `product_warranty`).
+- [x] Normalize values safely for string matching (handle null/undefined).
+- [x] Re-check search bar behavior manually (name/brand/price/size).
+- [x] Create cart page + route and navigate from Products card buttons to `/cart`.
+- [x] Add payment route/page and navigate:
+  - Products “Buy Now” -> `/payment`
+  - Cart “Buy from Cart” -> `/payment`
+- [ ] Implement cart page data loading (fetch `/api/cart/:userId`) and display items
 
 
-> Note: `npm run lint` currently fails in this repo due to existing `no-unused-vars` errors in multiple unrelated files.
+
+
+
+
+
 

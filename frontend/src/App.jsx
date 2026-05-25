@@ -1,27 +1,39 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Components/Navbar';
 import { ToastContainer } from 'react-toastify'; 
 import Footer from './Components/Footer';
 
-// Import Pages
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admincrud from './pages/Admincrud';
+import Cart from './pages/Cart';
+import Payment from './pages/Payment';
 
-// CSS Files
 import './App.css';
-import './api/Auth.css'; // <--- ADD THIS LINE
+import './api/Auth.css';
 
+// Wrapper Component
+const PageWrapper = ({ children }) => {
+  const location = useLocation();
+  const hideOn = ['/login', '/register'];
+  const shouldShow = !hideOn.includes(location.pathname);
+
+  return (
+    <>
+      {shouldShow && <Navbar />}
+      {children}
+      {shouldShow && <Footer />}
+    </>
+  );
+};
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      
-      <main>
+      <PageWrapper>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<Home />} />
@@ -29,21 +41,19 @@ export default function App() {
           <Route path="/contact" element={<Home />} />
           
           <Route path="/products" element={<Products />} />
-         <Route path="/admin" element={<Admincrud />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/admin" element={<Admincrud />} />
 
-          
-          {/* Separate Login & Register Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>
-      </main>
+      </PageWrapper>
 
       <ToastContainer 
         position="top-right"
         autoClose={3000}
       />
-      
-      <Footer /> 
     </BrowserRouter>
   );
 }

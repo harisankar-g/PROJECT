@@ -1,4 +1,3 @@
-//PaymentMethod
 const mongoose = require('mongoose');
 
 const paymentMethodSchema = new mongoose.Schema({
@@ -6,7 +5,7 @@ const paymentMethodSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ['debit_card', 'credit_card', 'cash_on_delivery', 'upi'],
-    uppercase: true
+    // uppercase: true  // Remove this line!
   },
   displayName: {
     type: String,
@@ -35,9 +34,5 @@ const paymentMethodSchema = new mongoose.Schema({
     default: Date.now
   }
 });
-
-// Indexes for fast queries
-paymentMethodSchema.index({ name: 1 });
-paymentMethodSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('PaymentMethod', paymentMethodSchema);

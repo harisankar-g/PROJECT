@@ -2,66 +2,81 @@ const Cart = require('../Models/cartModel');
 
 exports.getCart = async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userid: req.params.userid })
+        let cart = await Cart.findOne({ userid: req.params.userid })
             .populate('items.productid');
         
-        if (cart) {
-            res.status(200).json(cart);
-        } else {
-            res.status(404).json({ message: "Cart not found" });
+        if (!cart) {
+            return res.status(200).json({ userid: req.params.userid, items: [], totalBill: 0 });
         }
+        
+        res.status(200).json(cart);
     } catch (err) {
-        console.log('GET CART ERROR:', err); 
         res.status(500).json({ message: err.message });
     }
 };
 
 exports.addToCart = async (req, res) => {
-    const { userid, productid, quantity, price } = req.body;
+    const userid = req.body.userId || req.body.userid;
+    const productid = req.body.productId || req.body.productid;
+    const quantity = req.body.quantity || 1;
+    const price = req.body.price || 0;
     
     try {
-        console.log('Adding to cart:', { userid, productid, quantity, price }); 
-        
         let cart = await Cart.findOne({ userid });
         
-        if (cart) {
-            // Safety check for items array
-            if (!cart.items) cart.items = [];
-            if (!Array.isArray(cart.items)) cart.items = [];
-            
-            // Find product index SAFELY
-            let itemIndex = -1;
-            cart.items.forEach((item, index) => {
-                if (item.productid && item.productid.toString() === productid) {
-                    itemIndex = index;
-                }
-            });
-            
-            if (itemIndex > -1) {
-                cart.items[itemIndex].quantity += quantity;
-            } else {
-                cart.items.push({ productid, quantity, price });
-            }
-            
-            // Safe total calculation
-            cart.totalBill = cart.items.reduce((total, item) => {
-                return total + (item.quantity * item.price || 0);
-            }, 0);
-            
-            cart = await cart.save();
-            await cart.populate('items.productid');
-            
-            res.status(201).json(cart);
-        } else {
-            const newCart = await Cart.create({
-                userid,
-                items: [{ productid, quantity, price }],
-                totalBill: quantity * price
-            });
-            res.status(201).json(newCart);
+        if (!cart) {
+            cart = new Cart({ userid, items: [], totalBill: 0 });
         }
+        
+        if (!cart.items) cart.items = [];
+        
+        let itemIndex = cart.items.findIndex(
+            item => item.productid && item.productid.toString() === productid
+        );
+        
+        if (itemIndex > -1) {
+            cart.items[itemIndex].quantity += quantity;
+        } else {
+            cart.items.push({ productid, quantity, price });
+        }
+        
+        cart.totalBill = cart.items.reduce((total, item) => {
+            return total + (item.quantity * (item.price || 0));
+        }, 0);
+        
+        await cart.save();
+        await cart.populate('items.productid');
+        
+        res.status(201).json(cart);
     } catch (err) {
-        console.log('ADD TO CART ERROR:', err); 
-        res.status(500).json({ message: "Something went wrong", error: err.message });
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.removeFromCart = async (req, res) => {
+    const userid = req.params.userid;
+    const productid = req.params.productid;
+    
+    try {
+        let cart = await Cart.findOne({ userid });
+        
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+        
+        cart.items = cart.items.filter(
+            item => item.productid.toString() !== productid
+        );
+        
+        cart.totalBill = cart.items.reduce((total, item) => {
+            return total + (item.quantity * item.price);
+        }, 0);
+        
+        await cart.save();
+        await cart.populate('items.productid');
+        
+        res.status(200).json(cart);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
