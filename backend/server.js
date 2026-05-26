@@ -1,23 +1,32 @@
+// backend/server.js
+
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const connectDB = require('./Config/db');
 const imageRoutes = require('./Routes/imageRoutes');
+require('dotenv').config();
 
 connectDB();
 
-app.use(express.json()); 
+const app = express();
+
+app.use(express.json());
 app.use(cors());
 
-// Routes - REMOVED DUPLICATE
+// Routes
+app.use('/api/auth', require('./Routes/authRoutes'));
 app.use('/api/users', require('./Routes/userRoutes'));
 app.use('/api/products', require('./Routes/productRoutes'));
-app.use('/api/payments', require('./Routes/paymentRoutes'));  // Only once!
+app.use('/api/payments', require('./Routes/paymentRoutes'));
 app.use('/api/cart', require('./Routes/cartRoutes'));
-app.use('/api/auth', require('./Routes/authRoutes'));
 app.use('/api/images', imageRoutes);
 
-const PORT = 3000;
+// Add this to check server is running
+app.get('/', (req, res) => {
+    res.send('Server is running');
+});
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
