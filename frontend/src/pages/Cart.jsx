@@ -10,9 +10,8 @@ const Cart = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Get userId using the same function
   const userId = getUserId();
-  console.log('Cart page userId:', userId); // DEBUG
+  console.log('Cart page userId:', userId);
 
   useEffect(() => {
     if (userId) {
@@ -24,9 +23,7 @@ const Cart = () => {
 
   const fetchCart = async () => {
     try {
-      console.log('Fetching cart for:', userId); // DEBUG
       const res = await axios.get(`http://localhost:3000/api/cart/${userId}`);
-      console.log('Cart response:', res.data); // DEBUG
       setCart(res.data);
     } catch (err) {
       console.error(err);
@@ -45,6 +42,26 @@ const Cart = () => {
       console.error(err);
       toast.error('Failed to remove');
     }
+  };
+
+  // NEW FUNCTION: Buy single product
+  const buySingleItem = (item) => {
+    // Store single item details in localStorage or state
+    // You can also pass this via navigate state
+    const singleOrder = {
+      items: [{
+        productid: item.productid,
+        quantity: item.quantity,
+        price: item.price
+      }],
+      totalBill: item.price * item.quantity,
+      isSingleItem: true // Flag to identify single purchase
+    };
+    
+    // Save to localStorage to access in Payment page
+    localStorage.setItem('singleOrder', JSON.stringify(singleOrder));
+    
+    navigate('/payment');
   };
 
   if (loading) {
@@ -101,6 +118,15 @@ const Cart = () => {
                   <div className="item-total">
                     <strong>₹{item.price * item.quantity}</strong>
                   </div>
+                  
+                  {/* NEW BUTTON: Buy Single Item */}
+                  <button 
+                    className="btn-buy-now"
+                    onClick={() => buySingleItem(item)}
+                  >
+                    Buy Now
+                  </button>
+                  
                   <button 
                     className="btn-remove"
                     onClick={() => removeItem(item.productid._id)}
@@ -128,9 +154,13 @@ const Cart = () => {
             
             <button 
               className="btn-checkout"
-              onClick={() => navigate('/payment')}
+              onClick={() => {
+                // Clear single order if exists
+                localStorage.removeItem('singleOrder');
+                navigate('/payment');
+              }}
             >
-              Proceed to Checkout
+              Proceed to Checkout (All Items)
             </button>
           </div>
         </>

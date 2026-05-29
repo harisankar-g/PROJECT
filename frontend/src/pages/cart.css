@@ -166,14 +166,15 @@
   margin: 0;
 }
 
-/* Card Actions */
+/* Card Actions - FIXED */
 .cart-card-actions {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
-  min-width: 100px;
+  min-width: 120px;
   padding: 10px 0;
+  gap: 12px; /* Added gap between items */
 }
 
 .quantity {
@@ -193,6 +194,25 @@
   color: #333;
 }
 
+/* Buttons - FIXED with spacing */
+.btn-buy-now {
+  padding: 10px 20px;
+  background: #4a90d9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  width: 100%; /* Full width */
+}
+
+.btn-buy-now:hover {
+  background: #357abd;
+  transform: scale(1.02);
+}
+
 .btn-remove {
   padding: 10px 20px;
   background: #ffebee;
@@ -201,8 +221,9 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.3s;
+  width: 100%; /* Full width */
 }
 
 .btn-remove:hover {
@@ -285,7 +306,16 @@
   .cart-card-actions {
     width: 100%;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .cart-card-actions .btn-buy-now,
+  .cart-card-actions .btn-remove {
+    width: auto;
+    flex: 1;
+    min-width: 100px;
   }
 }

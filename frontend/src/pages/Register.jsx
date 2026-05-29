@@ -3,10 +3,11 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import '../api/Auth.css'; // DELETE THIS LINE - We will import in App.css
+import './Login.css';
 
 function Register() {
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [registerData, setRegisterData] = useState({
         firstname: '', lastname: '', email: '',
         password: '', conformpassword: '', address: '',
@@ -23,6 +24,12 @@ function Register() {
 
         if (registerData.password !== registerData.conformpassword) {
             toast.error("Passwords do not match!");
+            setLoading(false);
+            return;
+        }
+
+        if (registerData.password.length < 6) {
+            toast.error("Password must be at least 6 characters!");
             setLoading(false);
             return;
         }
@@ -59,10 +66,43 @@ function Register() {
                             <input type="text" name="lastname" placeholder="Last Name" onChange={handleChange} required />
                         </div>
                         <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required />
-                        <div className="row">
-                            <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-                            <input type="password" name="conformpassword" placeholder="Confirm Password" onChange={handleChange} required />
+                        
+                        {/* Password with Toggle */}
+                        <div className="row password-row">
+                            <div className="password-input-container">
+                                <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    name="password" 
+                                    placeholder="Password" 
+                                    onChange={handleChange} 
+                                    required 
+                                />
+                                <button
+                                    type="button"
+                                    className="toggle-password"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? "🙈" : "👁️"}
+                                </button>
+                            </div>
+                            <div className="password-input-container">
+                                <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    name="conformpassword" 
+                                    placeholder="Confirm Password" 
+                                    onChange={handleChange} 
+                                    required 
+                                />
+                                <button
+                                    type="button"
+                                    className="toggle-password"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? "🙈" : "👁️"}
+                                </button>
+                            </div>
                         </div>
+                        
                         <input type="text" name="address" placeholder="Address" onChange={handleChange} required />
                         <div className="row">
                             <select name="gender" onChange={handleChange}>
@@ -70,8 +110,9 @@ function Register() {
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <input type="text" name="phoneno" placeholder="Phone No" onChange={handleChange} required />
+                            <input type="tel" name="phoneno" placeholder="Phone No" onChange={handleChange} required pattern="[0-9]{10}" />
                         </div>
+                        
                         <button type="submit" disabled={loading}>
                             {loading ? 'Processing...' : 'Sign Up'}
                         </button>

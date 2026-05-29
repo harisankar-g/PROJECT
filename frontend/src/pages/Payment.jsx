@@ -1,8 +1,9 @@
+// frontend/pages/Payment.jsx
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { fetchPaymentMethods } from '../Services/paymentService';
 import { getUserId } from '../Services/cartService';
+import { fetchPaymentMethods } from '../Services/paymentService';
 import axios from 'axios';
 import './Payment.css';
 
@@ -12,8 +13,8 @@ const Payment = () => {
   const [selectedMethod, setSelectedMethod] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [processing, setProcessing] = useState(false);
   const [cart, setCart] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -27,22 +28,39 @@ const Payment = () => {
       const paymentData = await fetchPaymentMethods();
       setPaymentMethods(paymentData.data || []);
       
-      // Load cart from backend
-      const userId = getUserId();
-      if (userId) {
-        const cartResponse = await axios.get(`http://localhost:3000/api/cart/${userId}`);
-        setCart(cartResponse.data);
+      // Check for single item order first
+      const singleOrderData = localStorage.getItem('singleOrder');
+      if (singleOrderData) {
+        const parsedSingleOrder = JSON.parse(singleOrderData);
+        setCart(parsedSingleOrder);
+        localStorage.removeItem('singleOrder');
+      } else {
+        // Load full cart
+        const userId = getUserId();
+        if (userId) {
+          try {
+            const cartResponse = await axios.get(`http://localhost:3000/api/cart/${userId}`);
+            setCart(cartResponse.data);
+          } catch (err) {
+            console.error('Cart error:', err);
+          }
+        }
       }
       
       setLoading(false);
     } catch (err) {
-      setError('Failed to load data');
+      console.error(err);
+      setPaymentMethods([
+        { _id: '1', name: 'cash_on_delivery', displayName: 'Cash on Delivery', description: 'Pay when order is delivered', processingFee: 0 },
+        { _id: '2', name: 'upi', displayName: 'UPI', description: 'Pay via UPI', processingFee: 0 }
+      ]);
       setLoading(false);
     }
   };
 
   const handleMethodSelect = (methodName) => {
     setSelectedMethod(methodName);
+    setError('');
   };
 
   const handlePaymentSubmit = async (e) => {
@@ -55,31 +73,69 @@ const Payment = () => {
 
     try {
       setProcessing(true);
-      
-      const orderData = {
-        userId: getUserId(),
-        items: cart?.items || [],
-        paymentMethod: selectedMethod,
-        totalAmount: cart?.totalBill || 0
-      };
+      setError('');
 
-      console.log('Processing payment:', orderData);
+      const userId = getUserId();
       
-      // Replace alert with toast
-      toast.success(`Payment initiated via ${selectedMethod}!`);
+      if (!userId) {
+        toast.error('Please login first');
+        navigate('/login');
+        return;
+      }
+
+      // Prepare items from cart
+      const items = cart?.items?.map(item => ({
+        productid: item.productid?._id || item.productid,
+        quantity: item.quantity,
+        price: item.price
+      })) || [];
+
+      if (items.length === 0) {
+        setError('No items in cart');
+        setProcessing(false);
+        return;
+      }
+
+      console.log("📦 Creating order with items:", items);
+      console.log("💰 Total amount:", cart?.totalBill);
+
+      // Create order in backend (THIS WILL DECREASE STOCK)
+      const orderRes = await axios.post('http://localhost:3000/api/orders/create', {
+        userId,
+        items: items,
+        paymentMethod: selectedMethod,
+        totalAmount: cart?.totalBill || 0,
+        shippingAddress: ''
+      });
+
+      console.log("✅ Order created:", orderRes.data);
+
+      // Show success message
+      if (selectedMethod === 'cash_on_delivery') {
+        toast.success('✅ Order placed! Pay ₹' + (cart?.totalBill || 0) + ' on delivery');
+      } else if (selectedMethod === 'upi') {
+        toast.info('UPI ID: cr7sports@okhdfcbank - Send and screenshot');
+      }
+
+      // Clear cart
+      if (userId) {
+        try {
+          await axios.delete(`http://localhost:3000/api/cart/clear/${userId}`);
+          console.log("🛒 Cart cleared");
+        } catch (err) {
+          console.error('Cart clear error:', err);
+        }
+      }
       
-      // Clear cart after payment
-      // await axios.delete(`http://localhost:3000/api/cart/clear/${getUserId()}`);
-      
-      setProcessing(false);
-      
-      // Redirect to success page
       setTimeout(() => {
         navigate('/products');
-      }, 2000);
+      }, 3000);
       
     } catch (err) {
-      setError('Payment failed. Please try again.');
+      console.error("Order error:", err);
+      setError(err.response?.data?.msg || err.message || 'Payment failed');
+      toast.error('Order failed: ' + (err.response?.data?.msg || 'Try again'));
+    } finally {
       setProcessing(false);
     }
   };
@@ -88,7 +144,8 @@ const Payment = () => {
     return (
       <section className="page-content payment-page">
         <div className="loading-spinner">
-          <p>Loading...</p>
+          <div className="spinner"></div>
+          <p>Loading payment options...</p>
         </div>
       </section>
     );
@@ -98,46 +155,44 @@ const Payment = () => {
 
   return (
     <section className="page-content payment-page">
-      <h2>Select Payment Method</h2>
+      <h2>💳 Select Payment Method</h2>
       
       {error && <div className="error-message">{error}</div>}
       
       {totalAmount > 0 && (
         <div className="order-summary">
-          <p>Total Amount: <strong>₹{totalAmount}</strong></p>
+          <p>Total Amount to Pay</p>
+          <h3>₹{totalAmount}</h3>
         </div>
       )}
       
-      <form onSubmit={handlePaymentSubmit} className="payment-form">
+      <form onSubmit={handlePaymentSubmit}>
         <div className="payment-methods">
-          {paymentMethods.length === 0 ? (
-            <p className="no-methods">No payment methods available</p>
-          ) : (
-            paymentMethods.map((method) => (
-              <div
-                key={method._id}
-                className={`payment-option ${selectedMethod === method.name ? 'selected' : ''}`}
-                onClick={() => handleMethodSelect(method.name)}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method.name}
-                  checked={selectedMethod === method.name}
-                  onChange={() => handleMethodSelect(method.name)}
-                />
-                <div className="method-details">
-                  <h3>{method.displayName}</h3>
-                  <p>{method.description}</p>
-                  {method.processingFee > 0 && (
-                    <span className="processing-fee">
-                      Fee: {method.processingFee}%
-                    </span>
-                  )}
+          {paymentMethods.map((method) => (
+            <div
+              key={method._id}
+              className={`payment-option ${selectedMethod === method.name ? 'selected' : ''}`}
+              onClick={() => handleMethodSelect(method.name)}
+            >
+              <div className="payment-radio">
+                <div className={`radio-circle ${selectedMethod === method.name ? 'checked' : ''}`}>
+                  {selectedMethod === method.name && <span>✓</span>}
                 </div>
               </div>
-            ))
-          )}
+              <div className="method-details">
+                <h3>
+                  {method.name === 'cash_on_delivery' && '💵 '}
+                  {method.name === 'upi' && '📱 '}
+                  {method.name.includes('card') && '💳 '}
+                  {method.displayName}
+                </h3>
+                <p>{method.description}</p>
+                {method.processingFee > 0 && (
+                  <span className="processing-fee">+{method.processingFee}% fee</span>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
         <button 
@@ -145,9 +200,13 @@ const Payment = () => {
           className="submit-payment-btn"
           disabled={processing || !selectedMethod}
         >
-          {processing ? 'Processing...' : `Pay ₹${totalAmount}`}
+          {processing ? 'Processing...' : `Pay ₹${totalAmount} →`}
         </button>
       </form>
+
+      <button className="back-btn" onClick={() => navigate('/cart')}>
+        ← Back to Cart
+      </button>
     </section>
   );
 };

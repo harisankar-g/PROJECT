@@ -27,11 +27,11 @@
     margin-top: 50px;
 }
 
-/* Products Grid - 4 Columns */
+/* Products Grid - Responsive */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
     padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
@@ -46,19 +46,21 @@
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
 }
 
 /* Product Image */
 .product-image-wrapper {
     width: 100%;
-    height: 220px;
+    height: 200px;
     overflow: hidden;
     background: #f1f5f9;
+    flex-shrink: 0;
 }
 
 .product-image {
@@ -69,57 +71,78 @@
 }
 
 .product-card:hover .product-image {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
-/* Product Info */
+/* Product Info - Fixed */
 .product-info {
-    padding: 20px;
+    padding: 16px;
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 .product-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
+    font-size: 1rem;
+    margin-bottom: 6px;
     color: #1a1a2e;
     font-weight: 600;
-    line-height: 1.4;
+    line-height: 1.3;
+    /* Limit text lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.6em;
 }
 
 .product-info .brand {
     color: #e94560;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .product-info .price {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: #4f46e5;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
 }
 
-/* Buttons */
+.product-info .details {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+/* Buttons - Fixed Layout */
 .product-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-top: auto;
+    flex-wrap: wrap;
 }
 
 .product-buttons button {
     flex: 1;
-    padding: 12px;
+    min-width: 90px;
+    padding: 10px 8px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    text-align: center;
+    white-space: nowrap;
 }
 
 /* Add to Cart Button */
@@ -131,32 +154,61 @@
 .btn-add-cart:hover {
     background: #4f46e5;
     color: white;
-    transform: translateY(-2px);
 }
 
 /* Buy Button */
 .btn-buy {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    background: #4f46e5;
     color: white;
 }
 
 .btn-buy:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+    background: #4338ca;
 }
 
-/* Responsive - 2 Columns on Tablet */
-@media (max-width: 1024px) {
+/* Responsive */
+@media (max-width: 768px) {
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .product-image-wrapper {
+        height: 160px;
+    }
+    
+    .product-info {
+        padding: 12px;
+    }
+    
+    .product-info h3 {
+        font-size: 0.9rem;
+    }
+    
+    .product-info .price {
+        font-size: 1.1rem;
+    }
+    
+    .product-buttons {
+        flex-direction: column;
+    }
+    
+    .product-buttons button {
+        width: 100%;
     }
 }
 
-/* Responsive - 1 Column on Mobile */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
     .products-grid {
         grid-template-columns: 1fr;
-        max-width: 400px;
-        margin: 0 auto;
+    }
+    
+    .page-content {
+        padding: 20px 15px;
+    }
+    
+    .page-content h2 {
+        font-size: 1.8rem;
     }
 }

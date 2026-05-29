@@ -1,3 +1,4 @@
+// backend/Routes/paymentRoutes.js
 const express = require('express');
 const router = express.Router();
 const { getAllPaymentMethods, initializePaymentMethods } = require('../Controllers/paymentController');

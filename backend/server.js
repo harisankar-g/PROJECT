@@ -1,5 +1,4 @@
 // backend/server.js
-
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./Config/db');
@@ -17,16 +16,17 @@ app.use(cors());
 app.use('/api/auth', require('./Routes/authRoutes'));
 app.use('/api/users', require('./Routes/userRoutes'));
 app.use('/api/products', require('./Routes/productRoutes'));
-app.use('/api/payments', require('./Routes/paymentRoutes'));
+app.use('/api/payment', require('./Routes/paymentRoutes'));
 app.use('/api/cart', require('./Routes/cartRoutes'));
+app.use('/api/orders', require('./Routes/orderRoutes'));
 app.use('/api/images', imageRoutes);
 
-// Add this to check server is running
+// Root route
 app.get('/', (req, res) => {
-    res.send('Server is running');
+    res.send(' Server is running');
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(` Server running on port ${PORT}`);
 });

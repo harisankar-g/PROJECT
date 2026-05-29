@@ -8,6 +8,7 @@ import './Login.css';
 function Login() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [loginData, setLoginData] = useState({ email: '', password: '' });
 
     const handleChange = (e) => {
@@ -24,10 +25,10 @@ function Login() {
             if (response.data.msg === "Login successful" && response.data.token) {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
+                localStorage.setItem('role', response.data.user.role);
                 
                 toast.success("Login Successful!");
                 
-                // Check user role and redirect
                 if (response.data.user.role === 'admin') {
                     navigate('/admin');
                 } else {
@@ -69,14 +70,26 @@ function Login() {
                             onChange={handleChange}
                             required
                         />
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            value={loginData.password}
-                            onChange={handleChange}
-                            required
-                        />
+                        
+                        {/* Password Input with Eye Icon */}
+                        <div className="password-input-container">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                placeholder="Password"
+                                value={loginData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? "👁️" : "👁️‍🗨️"}
+                            </button>
+                        </div>
+                        
                         <button type="submit" disabled={loading}>
                             {loading ? 'Logging in...' : 'Login'}
                         </button>

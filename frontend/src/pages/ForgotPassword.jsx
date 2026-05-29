@@ -1,16 +1,17 @@
+// frontend/pages/ForgotPassword.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
-import './ForgotPassword.css';
-function ForgotPassword() {  // uppercase P
+
+function ForgotPassword() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [step, setStep] = useState(1);
-    const [resetToken, setResetToken] = useState('');
+    const [token, setToken] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -22,9 +23,9 @@ function ForgotPassword() {  // uppercase P
             const response = await axios.post('http://localhost:3000/api/auth/forgotpassword', { email });
             
             if (response.data.resetToken) {
-                setResetToken(response.data.resetToken);
+                setToken(response.data.resetToken);
                 setStep(2);
-                toast.success("Token generated! Set new password.");
+                toast.success("Token generated! Enter new password.");
             }
         } catch (err) {
             toast.error(err.response?.data?.msg || "Failed to generate token");
@@ -41,16 +42,21 @@ function ForgotPassword() {  // uppercase P
             return;
         }
         
+        if (newPassword.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return;
+        }
+        
         setLoading(true);
         
         try {
-            const response = await axios.post(`http://localhost:3000/api/auth/resetpassword/${resetToken}`, {
+            const response = await axios.post(`http://localhost:3000/api/auth/resetpassword/${token}`, {
                 password: newPassword,
                 confirmPassword: confirmPassword
             });
             
             if (response.data.msg === "Password Reset Successful") {
-                toast.success("Password reset successful!");
+                toast.success("Password reset successful! Redirecting...");
                 setTimeout(() => navigate('/login'), 2000);
             }
         } catch (err) {
@@ -72,7 +78,7 @@ function ForgotPassword() {  // uppercase P
             <div className="auth-form-section">
                 <div className="form-wrapper">
                     <div className="tabs">
-                        <button className="active-tab">Forgot Password</button>
+                        <button className="active-tab">Reset Password</button>
                     </div>
 
                     {step === 1 ? (
@@ -85,13 +91,21 @@ function ForgotPassword() {  // uppercase P
                                 required
                             />
                             <button type="submit" disabled={loading}>
-                                {loading ? 'Processing...' : 'Send Reset Link'}
+                                {loading ? 'Processing...' : 'Get Reset Token'}
                             </button>
                         </form>
                     ) : (
                         <form onSubmit={handleResetPassword}>
-                            <div style={{ background: '#f5f5f5', padding: '10px', marginBottom: '15px', fontSize: '12px', wordBreak: 'break-all' }}>
-                                <strong>Token:</strong> {resetToken}
+                            <div style={{ 
+                                background: '#e3f2fd', 
+                                padding: '12px', 
+                                borderRadius: '8px', 
+                                marginBottom: '15px',
+                                fontSize: '13px',
+                                color: '#1565c0'
+                            }}>
+                                <strong>Token:</strong><br/>
+                                <code style={{ wordBreak: 'break-all' }}>{token}</code>
                             </div>
                             
                             <input
@@ -100,6 +114,7 @@ function ForgotPassword() {  // uppercase P
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 required
+                                minLength={6}
                             />
                             <input
                                 type="password"
@@ -107,12 +122,24 @@ function ForgotPassword() {  // uppercase P
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
+                                minLength={6}
                             />
                             <button type="submit" disabled={loading}>
                                 {loading ? 'Resetting...' : 'Reset Password'}
                             </button>
                             
-                            <button type="button" onClick={() => setStep(1)} style={{ marginTop: '10px', background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}>
+                            <button 
+                                type="button" 
+                                onClick={() => { setStep(1); setToken(''); }}
+                                style={{ 
+                                    marginTop: '10px', 
+                                    background: 'none', 
+                                    border: 'none', 
+                                    color: '#666', 
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline'
+                                }}
+                            >
                                 ← Back
                             </button>
                         </form>
@@ -127,4 +154,4 @@ function ForgotPassword() {  // uppercase P
     );
 }
 
-export default ForgotPassword;  
+export default ForgotPassword;
